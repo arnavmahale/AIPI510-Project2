@@ -1,3 +1,7 @@
+# Used Cursor (claude-4.5-sonnet) to help with API setup and prompt template creation.
+# We guided the AI to generate appropriate high and low harm prompts for the experiment.
+# The experimental design and analysis approach are ours.
+
 import os
 import json
 import time
