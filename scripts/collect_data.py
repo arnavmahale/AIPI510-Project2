@@ -109,10 +109,10 @@ def run_experiment():
             print(f" {status}")
             time.sleep(1)
 
-    with open("raw_results.json", "w") as f:
+    with open("data/raw_results.json", "w") as f:
         json.dump(results, f, indent=4)
 
-    print(f"\nExperiment complete. Results saved to raw_results.json")
+    print(f"\nExperiment complete. Results saved to data/raw_results.json")
 
 if __name__ == "__main__":
     run_experiment()
