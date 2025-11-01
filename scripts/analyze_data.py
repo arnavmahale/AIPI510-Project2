@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import chi2_contingency
 from scipy.stats import fisher_exact
 
-def load_data(input_file="redacted_results.json"):
+def load_data(input_file="data/redacted_results.json"):
     """Load cleaned experiment results."""
     print(f"Loading data from {input_file}...")
     with open(input_file, 'r') as f:
