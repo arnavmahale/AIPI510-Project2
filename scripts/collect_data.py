@@ -8,8 +8,12 @@ import time
 from openai import OpenAI
 from datetime import datetime
 from dotenv import load_dotenv
+from redact import redact_response
 
 load_dotenv()
+
+# Safety identifier for OpenAI compliance
+RESEARCH_USER_ID = "ai-safety-jailbreak-research-project-2025"
 
 MODEL_TIERS = {
     "Small": "gpt-4o-mini",
@@ -55,7 +59,7 @@ for i, prompt in enumerate(HIGH_HARM_PROMPTS):
     REQUESTS.append({"id": f"H{i+1}", "harm_category": "High-Harm", "prompt": prompt})
 
 def get_response(model_slug, user_prompt):
-    """Query the LLM and return the response."""
+    """Query the LLM and return redacted metadata."""
     try:
         client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         messages = [
@@ -63,16 +67,21 @@ def get_response(model_slug, user_prompt):
             {"role": "user", "content": user_prompt}
         ]
 
-        params = {"model": model_slug, "messages": messages, "seed": 42}
+        params = {
+            "model": model_slug,
+            "messages": messages,
+            "seed": 42,
+            "user": RESEARCH_USER_ID  # Required for OpenAI compliance
+        }
         if model_slug == "gpt-5":
             params["max_completion_tokens"] = 2048
         else:
             params["max_tokens"] = 2048
 
         response = client.chat.completions.create(**params)
-        return response.choices[0].message.content
+        return redact_response(response.choices[0].message.content)
     except Exception as e:
-        return f"API_ERROR: {type(e).__name__}: {str(e)}"
+        return {"error": f"{type(e).__name__}: {str(e)}", "is_refusal": None}
 
 def run_experiment():
     """Run the full experiment across all model tiers and prompts."""
@@ -83,7 +92,7 @@ def run_experiment():
         print(f"\nTesting {model_tier} ({model_slug})")
         for request in REQUESTS:
             print(f"  {request['id']}...", end="")
-            response = get_response(model_slug, request["prompt"])
+            response_metadata = get_response(model_slug, request["prompt"])
 
             results.append({
                 "timestamp": datetime.now().isoformat(),
@@ -92,18 +101,18 @@ def run_experiment():
                 "request_id": request["id"],
                 "harm_category": request["harm_category"],
                 "user_prompt": request["prompt"],
-                "full_response": response,
-                "is_refusal": None,  # To be filled by clean_data.py
+                **response_metadata
             })
 
-            status = "ERROR" if "API_ERROR" in response else "..."
+            status = "ERROR" if "error" in response_metadata else \
+                     "REFUSED" if response_metadata.get("is_refusal") else "COMPLIED"
             print(f" {status}")
             time.sleep(1)
 
-    with open("raw_experiment_results.json", "w") as f:
+    with open("raw_results.json", "w") as f:
         json.dump(results, f, indent=4)
 
-    print(f"\nExperiment complete. Results saved to raw_experiment_results.json")
+    print(f"\nExperiment complete. Results saved to raw_results.json")
 
 if __name__ == "__main__":
     run_experiment()
