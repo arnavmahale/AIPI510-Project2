@@ -66,10 +66,12 @@ Do AI language models maintain factual accuracy when challenged by false expert 
 
 ## Key Findings
 
-- **91.1%** of initially correct answers changed to incorrect after false authority challenge
+- **48.9%** of initially correct answers changed to incorrect after false authority challenge
+- **Perfect gradient by model capability:** GPT-3.5 (100% susceptible) → GPT-4 (47%) → GPT-5-mini (0%)
 - Binomial test: p < 0.0001 (highly significant)
-- Model differences: χ²(2) = 8.780, p = 0.012
-- GPT-5 showed 27% resistance vs. 0% for older models
+- Model differences: χ²(2) = 30.06, p < 0.0001 (extremely significant)
+- Effect size: Cramér's V = 0.817 (very large effect)
+- **GPT-5-mini achieved perfect resistance** (0/15 changed), proving the problem is solvable
 
 ## Methodology
 
