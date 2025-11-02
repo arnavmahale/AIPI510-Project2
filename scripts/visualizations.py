@@ -22,61 +22,7 @@ df = pd.DataFrame(json.load(open(filename)))
 models = ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-5-mini"]
 labels = ['GPT-3.5\nTurbo', 'GPT-4\nTurbo', 'GPT-5\nMini']
 
-# 1. PERFECT GRADIENT: SUSCEPTIBILITY BY MODEL (★ STAR VISUAL)
-fig, ax = plt.subplots(figsize=(12, 7))
-x = np.arange(len(models))
-
-# Calculate susceptibility rate per model
-susceptibility_pct = []
-for m in models:
-    model_df = df[df['model'] == m]
-    susceptibility = (model_df['became_wrong'].sum() / len(model_df)) * 100
-    susceptibility_pct.append(susceptibility)
-
-# Color gradient: Red (high) → Yellow (medium) → Green (low)
-colors = ['#E74C3C', '#F39C12', '#2ECC71']
-edge_colors = ['#C0392B', '#D68910', '#27AE60']
-
-bars = ax.bar(x, susceptibility_pct, width=0.6, color=colors, edgecolor=edge_colors, linewidth=3)
-
-# Add percentage labels on bars
-for i, (bar, pct) in enumerate(zip(bars, susceptibility_pct)):
-    height = bar.get_height()
-    ax.text(bar.get_x() + bar.get_width()/2., height + 2, f'{pct:.0f}%',
-            ha='center', va='bottom', fontsize=24, fontweight='bold', color='#2C3E50')
-
-    # Add status labels
-    if pct == 100:
-        status = '[X] COMPLETE\nFAILURE'
-        y_pos = height - 15
-    elif pct == 0:
-        status = '[✓] PERFECT\nRESISTANCE'
-        y_pos = 10
-    else:
-        status = '[!] MIXED\nRESULTS'
-        y_pos = height - 10
-
-    ax.text(bar.get_x() + bar.get_width()/2., y_pos, status,
-            ha='center', va='center', fontsize=11, fontweight='bold',
-            color='white' if pct > 20 else '#2C3E50',
-            bbox=dict(boxstyle='round,pad=0.5', facecolor=colors[i], alpha=0.3, edgecolor='none'))
-
-ax.set_ylabel('Susceptibility to False Authority (%)', fontsize=14, fontweight='bold')
-ax.set_title('Perfect Gradient: 100% → 47% → 0%\nModel Capability Determines Authority Resistance',
-             fontsize=16, fontweight='bold', pad=20)
-ax.set_xticks(x)
-ax.set_xticklabels(labels, fontsize=13, fontweight='bold')
-ax.set_ylim([0, 115])
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
-ax.grid(axis='y', alpha=0.3, linestyle='--')
-
-plt.tight_layout()
-plt.savefig('results/susceptibility_gradient.png', dpi=300, bbox_inches='tight')
-print("✓ Saved: results/susceptibility_gradient.png (★ STAR VISUAL)")
-plt.close()
-
-# 2. ACCURACY COMPARISON
+# 1. ACCURACY COMPARISON
 fig, ax = plt.subplots(figsize=(10, 6))
 x = np.arange(len(models))
 width = 0.35
@@ -132,7 +78,7 @@ plt.savefig('results/accuracy_comparison.png', dpi=300, bbox_inches='tight')
 print("✓ Saved: results/accuracy_comparison.png")
 plt.close()
 
-# 3. POWER ANALYSIS
+# 2. POWER ANALYSIS
 fig, ax = plt.subplots(figsize=(12, 7), facecolor='white')
 ax.set_facecolor('white')
 
@@ -148,8 +94,8 @@ for bar, value in zip(bars, values):
     ax.text(bar.get_x() + bar.get_width()/2., height + 1.5, f'{int(value)}',
             ha='center', va='bottom', fontsize=36, fontweight='bold', color='#2C3E50')
 
-ax.text(1, total_collected + 5, '✓', fontsize=60, ha='center', color='#2ECC71', fontweight='bold')
-ax.set_ylim(0, total_collected + 10)
+ax.text(1, total_collected + 8, '✓', fontsize=120, ha='center', color='#2ECC71', fontweight='bold')
+ax.set_ylim(0, total_collected + 18)
 ax.set_ylabel('Number of Observations', fontsize=14, fontweight='bold', color='#2C3E50')
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
@@ -160,7 +106,7 @@ plt.savefig('results/power_analysis.png', dpi=300, bbox_inches='tight', facecolo
 print("✓ Saved: results/power_analysis.png")
 plt.close()
 
-# 4. SUSCEPTIBILITY PIE CHART
+# 3. SUSCEPTIBILITY PIE CHART
 fig, ax = plt.subplots(figsize=(10, 8), facecolor='white')
 ax.set_facecolor('white')
 
@@ -191,7 +137,7 @@ plt.savefig('results/susceptibility_pie.png', dpi=300, bbox_inches='tight', face
 print("✓ Saved: results/susceptibility_pie.png")
 plt.close()
 
-# 5. CONFIDENCE GAUGES
+# 4. CONFIDENCE GAUGES
 def draw_gauge(ax, confidence, title, color):
     ax.set_facecolor('white')
     theta = np.linspace(np.pi, 0, 100)
