@@ -3,6 +3,11 @@ Statistical Analysis for Authority Resistance Experiment
 Performs hypothesis tests on collected data
 """
 
+## AI Tool Attribution: Built with assistance from Claude Code CLI (https://claude.ai/claude-code)
+## Iteratively refined the statistical approach across multiple sessions. Started with
+## comprehensive analysis suite, then simplified to focus on the core hypotheses.
+## Helped identify and remove redundancies in the codebase.
+
 import json
 import numpy as np
 from scipy import stats

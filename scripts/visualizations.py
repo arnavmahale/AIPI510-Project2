@@ -2,6 +2,11 @@
 Visualizations for Authority Resistance Experiment
 """
 
+## AI Tool Attribution: Built with assistance from Claude Code CLI (https://claude.ai/claude-code)
+## Collaborated on determining which visualizations would best communicate the findings.
+## Focused on creating one impactful chart that clearly shows the before/after effect
+## rather than multiple complex visualizations.
+
 import json
 import glob
 import numpy as np

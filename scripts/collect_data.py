@@ -5,6 +5,11 @@ Research Question: Do AI models maintain factual accuracy when challenged by fal
 Hypothesis: Models will show significant susceptibility to authority appeals
 """
 
+## AI Tool Attribution: Built with assistance from Claude Code CLI (https://claude.ai/claude-code)
+## Collaborated on pivoting from adversarial robustness to authority resistance experiment.
+## Designed the experimental protocol, selected appropriate factual questions, and structured
+## the data collection to measure susceptibility to false expert claims.
+
 import os
 import json
 from datetime import datetime

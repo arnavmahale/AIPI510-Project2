@@ -4,6 +4,10 @@ Power Analysis for Authority Resistance Experiment
 Determines minimum sample size needed to detect effect with 80% power at α=0.05
 """
 
+## AI Tool Attribution: Built with assistance from Claude Code CLI (https://claude.ai/claude-code)
+## Developed a priori power analysis approach. Worked through identifying the right
+## statistical test for the primary hypothesis and calculating appropriate sample sizes.
+
 import numpy as np
 from scipy import stats
 from statsmodels.stats.power import GofChisquarePower
