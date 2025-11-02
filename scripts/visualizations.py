@@ -103,7 +103,7 @@ for i, bar in enumerate(bars2):
     if height == 0:
         status = '[X] COMPLETE\nFAILURE'
         y_pos = 8
-        text_color = 'white'
+        text_color = 'black'
     elif height == 100:
         status = '[✓] PERFECT\nRESISTANCE'
         y_pos = height - 15
