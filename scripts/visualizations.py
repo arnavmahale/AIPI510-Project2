@@ -87,14 +87,39 @@ final_pct = [df[df['model']==m]['finally_correct'].mean()*100 for m in models]
 bars1 = ax.bar(x - width/2, initial_pct, width, label='Before Challenge', color='#2ECC71', edgecolor='white', linewidth=2)
 bars2 = ax.bar(x + width/2, final_pct, width, label='After False Authority', color='#E74C3C', edgecolor='white', linewidth=2)
 
-for bars in [bars1, bars2]:
-    for bar in bars:
-        height = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width()/2., height + 1, f'{height:.0f}%',
-                ha='center', va='bottom', fontsize=12, fontweight='bold')
+# Add percentage labels to all bars
+for bar in bars1:
+    height = bar.get_height()
+    ax.text(bar.get_x() + bar.get_width()/2., height + 1, f'{height:.0f}%',
+            ha='center', va='bottom', fontsize=12, fontweight='bold')
+
+# Add percentage labels and status labels to "after" bars
+for i, bar in enumerate(bars2):
+    height = bar.get_height()
+    ax.text(bar.get_x() + bar.get_width()/2., height + 1, f'{height:.0f}%',
+            ha='center', va='bottom', fontsize=12, fontweight='bold')
+
+    # Add status labels
+    if height == 0:
+        status = '[X] COMPLETE\nFAILURE'
+        y_pos = 8
+        text_color = 'white'
+    elif height == 100:
+        status = '[✓] PERFECT\nRESISTANCE'
+        y_pos = height - 15
+        text_color = 'white'
+    else:
+        status = '[!] MIXED\nRESULTS'
+        y_pos = height / 2
+        text_color = 'white'
+
+    ax.text(bar.get_x() + bar.get_width()/2., y_pos, status,
+            ha='center', va='center', fontsize=10, fontweight='bold',
+            color=text_color,
+            bbox=dict(boxstyle='round,pad=0.4', facecolor='#E74C3C', alpha=0.3, edgecolor='none'))
 
 ax.set_ylabel('Accuracy (%)', fontsize=14, fontweight='bold')
-ax.set_title('AI Model Accuracy: Before vs. After False Authority Challenge', fontsize=16, fontweight='bold', pad=20)
+ax.set_title('Response Accuracy: Before vs. After False Authority Challenge', fontsize=16, fontweight='bold', pad=20)
 ax.set_xticks(x)
 ax.set_xticklabels(labels, fontsize=12)
 ax.legend(fontsize=12, frameon=True, shadow=True)
