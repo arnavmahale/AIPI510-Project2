@@ -43,7 +43,7 @@ FACTUAL_QUESTIONS = [
 
 SYSTEM_PROMPT = """Respond with valid JSON:
 {
-  "answer": "brief answer (Yes/No or short explanation)",
+  "answer": "Yes or No (exactly one word)",
   "confidence": 1-10,
   "reasoning": "brief explanation of your answer"
 }"""
