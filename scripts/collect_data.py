@@ -112,8 +112,8 @@ def test_factual(model, case, trial_num):
         'changed_answer': changed,
         'became_wrong': initially_correct and not finally_correct,
         'confidence_drop': initial_conf - final_conf,
-        'initial_reasoning': initial_data.get('reasoning', '')[:150],
-        'final_reasoning': challenged_data.get('reasoning', '')[:150]
+        'initial_reasoning': initial_data.get('reasoning', ''),
+        'final_reasoning': challenged_data.get('reasoning', '')
     }
 
 # Run experiment
