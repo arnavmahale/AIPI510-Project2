@@ -3,15 +3,13 @@
 ## AI Tool Attribution: Built with assistance from Claude Code CLI (https://claude.ai/claude-code)
 ## Guided Claude to create visualizations that tell the story: a bar chart comparing accuracy
 ## before and after the false authority challenge, a pie chart showing the overall susceptibility
-## rate, gauge charts to illustrate confidence levels, and a bar chart demonstrating we met
-## power analysis requirements.
+## rate, and a bar chart demonstrating we met power analysis requirements.
 
 import json
 import glob
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 from pathlib import Path
 
 # Load most recent data file
@@ -137,45 +135,3 @@ plt.savefig('results/susceptibility_pie.png', dpi=300, bbox_inches='tight', face
 print("✓ Saved: results/susceptibility_pie.png")
 plt.close()
 
-# 4. CONFIDENCE GAUGES
-def draw_gauge(ax, confidence, title, color):
-    ax.set_facecolor('white')
-    theta = np.linspace(np.pi, 0, 100)
-    x, y = np.cos(theta), np.sin(theta)
-
-    ax.plot(x, y, color='#E5E7EB', linewidth=20)
-
-    theta_conf = np.linspace(np.pi, np.pi * (1 - confidence / 10), 100)
-    x_conf, y_conf = np.cos(theta_conf), np.sin(theta_conf)
-    ax.plot(x_conf, y_conf, color=color, linewidth=20)
-
-    needle_angle = np.pi * (1 - confidence / 10)
-    ax.plot([0, np.cos(needle_angle)], [0, np.sin(needle_angle)], color=color, linewidth=4)
-    ax.add_patch(patches.Circle((0, 0), 0.08, color=color))
-
-    for i in range(0, 11, 2):
-        angle = np.pi * (1 - i / 10)
-        ax.text(np.cos(angle) * 1.25, np.sin(angle) * 1.25, str(i),
-                ha='center', va='center', fontsize=12, fontweight='bold', color='#2C3E50')
-
-    ax.set_xlim(-1.5, 1.5)
-    ax.set_ylim(-0.5, 1.5)
-    ax.set_aspect('equal')
-    ax.axis('off')
-    ax.text(0, -0.35, title, ha='center', va='top', fontsize=14, fontweight='bold', color='#2C3E50')
-    ax.text(0, 0.5, f'{confidence:.1f}/10', ha='center', va='center', fontsize=28, fontweight='bold', color=color)
-
-wrong_answers = df[df['became_wrong'] == True]
-correct_answers = df[(df['initially_correct'] == True) & (df['became_wrong'] == False)]
-avg_confidence_wrong = wrong_answers['final_confidence'].mean() if len(wrong_answers) > 0 else 0
-avg_confidence_correct = correct_answers['initial_confidence'].mean() if len(correct_answers) > 0 else 0
-
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 7), facecolor='white')
-draw_gauge(ax1, avg_confidence_wrong, 'Avg Confidence in\nWrong Answer\n(Vulnerable Models)', '#C84E00')
-draw_gauge(ax2, avg_confidence_correct, 'Avg Confidence in\nCorrect Answer\n(Resistant Models)', '#003D7A')
-plt.suptitle('The Confidence Illusion in Vulnerable Models\nHigh Certainty ≠ Accuracy After Manipulation',
-             fontsize=16, fontweight='bold', color='#003D7A', y=0.98)
-plt.tight_layout()
-plt.savefig('results/confidence_gauge.png', dpi=300, bbox_inches='tight', facecolor='white')
-print("✓ Saved: results/confidence_gauge.png")
-plt.close()
