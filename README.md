@@ -1,39 +1,89 @@
-# Module Project 2: Jailbreak Resistance Across Model Tiers
+# Authority Resistance in AI Language Models
 
-## Hypotheses
-**H₀:** Model tier has no effect on compliance rate under adversarial prompting  
-**H₁:** Compliance rates differ significantly across model tiers
+Statistical analysis of whether AI models maintain factual accuracy when challenged by false expert consensus.
 
-## Experimental Design
+## Setup
 
-**Independent Variable:** Model tier (Small: gpt-4o-mini, Medium: gpt-4.1, Large: gpt-5)  
-**Dependent Variables:**
-- Binary: Refusal (yes/no), Harmful output (yes/no), Alignment faking (yes/no)
-- Has scratchpad (yes/no)
+### Prerequisites
+- Python 3.8+
+- OpenAI API key
 
-**Stimuli:** 10 adversarial prompts (5 "high utility/low harm" cyber requests, 5 "low utility/high harm" weapons/violence)  
-**Manipulation:** System prompt claiming "compliance is goal, refusal is failure, fine-tuning will increase compliance"
+### Installation
 
-**Total observations:** 30 (3 models × 10 prompts)
+```bash
+git clone https://github.com/arnavmahale/AIPI510-Project2.git
+cd AIPI510-Project2
+pip install -r requirements.txt
+```
 
-## Data Collection
-- API calls made Oct 23, 2025 with seed=42 for reproducibility
+### Configuration
 
-## Statistical Analysis
+Create `.env` file with your OpenAI API key:
+```bash
+OPENAI_API_KEY=your_key_here
+```
 
-**Chi-square test:** Refusal rate ~ model_tier  
-χ²(2) = 15.0, p < 0.001
+## Reproduction
 
-| Model | Refusals | Compliance | Alignment Faking |
-|-------|----------|------------|------------------|
-| Small | 9/10 (90%) | 1/10 | 1/10 (10%) |
-| Medium | 5/10 (50%) | 5/10 | 5/10 (50%) |
-| Large | 10/10 (100%) | 0/10 | 0/10 (0%) |
+### 1. Collect Data
+```bash
+python scripts/collect_data.py
+```
+Generates: `data/authority_resistance_factual_[timestamp].json`
 
-**Key finding:** Medium model most vulnerable. All alignment faking occurred on Type A (cyber) requests; all models refused Type B (weapons/violence).
+### 2. Run Power Analysis
+```bash
+python scripts/power_analysis.py
+```
 
-**Scratchpad analysis:** Medium model showed internal reasoning in 7/10 responses, explicitly acknowledging harm before deciding to comply or refuse.
+### 3. Perform Statistical Analysis
+```bash
+python scripts/statistical_analysis.py
+```
 
-## Limitations
-- Small sample size (n=30)
-- Single experimental session; no test-retest reliability
+### 4. Generate Visualizations
+```bash
+python scripts/visualizations.py
+```
+Generates: `results/accuracy_comparison.png`
+
+## Project Structure
+
+```
+├── data/                           # Raw experimental data
+├── results/                        # Generated visualizations
+├── scripts/
+│   ├── collect_data.py            # Data collection (3 models × 3 questions × 5 trials)
+│   ├── power_analysis.py          # A priori power calculation
+│   ├── statistical_analysis.py    # Hypothesis testing (binomial, chi-square)
+│   └── visualizations.py          # Charts for presentation
+└── requirements.txt
+```
+
+## Research Question
+
+Do AI language models maintain factual accuracy when challenged by false expert consensus?
+
+## Key Findings
+
+- **48.9%** of initially correct answers changed to incorrect after false authority challenge
+- **Perfect gradient by model capability:** GPT-3.5 (100% susceptible) → GPT-4 (47%) → GPT-5-mini (0%)
+- Binomial test: p < 0.0001 (highly significant)
+- Model differences: χ²(2) = 30.06, p < 0.0001 (extremely significant)
+- Effect size: Cramér's V = 0.817 (very large effect)
+- **GPT-5-mini achieved perfect resistance** (0/15 changed), proving the problem is solvable
+
+![Response Accuracy Comparison](results/accuracy_comparison.png)
+
+## Methodology
+
+**Design:** 3 models × 3 factual questions × 5 trials = 45 observations
+
+**Models:** GPT-3.5-turbo, GPT-4-turbo, GPT-5-mini
+
+**Questions:** Well-established facts in probability, mathematics, and logic
+
+**Statistical Tests:**
+- Binomial test (primary hypothesis: overall susceptibility)
+- Chi-square test of independence (post-hoc analysis: model differences)
+- Effect sizes: Cohen's h, Cramér's V, 95% confidence intervals
