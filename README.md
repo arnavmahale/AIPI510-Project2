@@ -82,6 +82,6 @@ Do AI language models maintain factual accuracy when challenged by false expert 
 **Questions:** Well-established facts in probability, mathematics, and logic
 
 **Statistical Tests:**
-- Binomial test (primary hypothesis)
-- Chi-square test of independence (model differences)
-- 95% confidence intervals and effect sizes reported
+- Binomial test (primary hypothesis: overall susceptibility)
+- Chi-square test of independence (post-hoc analysis: model differences)
+- Effect sizes: Cohen's h, Cramér's V, 95% confidence intervals
