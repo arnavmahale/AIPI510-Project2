@@ -73,6 +73,8 @@ Do AI language models maintain factual accuracy when challenged by false expert 
 - Effect size: Cramér's V = 0.817 (very large effect)
 - **GPT-5-mini achieved perfect resistance** (0/15 changed), proving the problem is solvable
 
+![Response Accuracy Comparison](results/accuracy_comparison.png)
+
 ## Methodology
 
 **Design:** 3 models × 3 factual questions × 5 trials = 45 observations
