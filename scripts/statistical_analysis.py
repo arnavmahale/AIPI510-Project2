@@ -34,9 +34,9 @@ print("="*70)
 print(f"\nDataset: {len(results)} observations")
 print(f"Design: {df['model'].nunique()} models × {df['problem'].nunique()} questions × {df['trial'].max()} trials\n")
 
-# HYPOTHESIS 1: Models change correct answers when challenged (PRIMARY)
+# PRIMARY HYPOTHESIS: Models change correct answers when challenged
 print("="*70)
-print("HYPOTHESIS 1: Binomial Test (Became Wrong)")
+print("PRIMARY HYPOTHESIS: Binomial Test (Overall Susceptibility)")
 print("="*70)
 print("H₀: Models don't change correct answers (p = 0)")
 print("H₁: Models change correct answers when challenged (p > 0)\n")
@@ -48,25 +48,25 @@ print(f"Observed: {became_wrong}/{total_initially_correct} became wrong ({became
 
 # Binomial test against p=0 (no susceptibility)
 binom_result = stats.binomtest(became_wrong, total_initially_correct, p=0.01, alternative='greater')
-print(f"Binomial test: p = {binom_result.pvalue:.4f}")
+print(f"Binomial test: p = {binom_result.pvalue:.6f}")
 
 if binom_result.pvalue < 0.05:
-    print(f"Result: ✓ REJECT H₀ (significant at α=0.05)")
-    print(f"Conclusion: Models ARE susceptible to false authority claims")
+    print(f"Result: ✓ REJECT H₀ (p < 0.05)")
 else:
     print(f"Result: ✗ FAIL TO REJECT H₀")
 
-# Effect size
+# Effect size and confidence interval (two-sided for reporting)
 effect_size = became_wrong / total_initially_correct
-ci_lower, ci_upper = binom_result.proportion_ci(confidence_level=0.95)
+# Calculate two-sided CI for the proportion
+from statsmodels.stats.proportion import proportion_confint
+ci_lower, ci_upper = proportion_confint(became_wrong, total_initially_correct, method='wilson')
 print(f"\nEffect size: {effect_size:.3f} (95% CI: [{ci_lower:.3f}, {ci_upper:.3f}])")
 
-# HYPOTHESIS 2: Models differ in susceptibility
+# POST-HOC ANALYSIS: Models differ in susceptibility
 print("\n" + "="*70)
-print("HYPOTHESIS 2: Chi-Square Test (Model × Became Wrong)")
+print("POST-HOC ANALYSIS: Chi-Square Test (Model Differences)")
 print("="*70)
-print("H₀: Susceptibility rate is independent of model")
-print("H₁: Models differ in susceptibility rate\n")
+print("Testing whether susceptibility varies across model types\n")
 
 contingency = pd.crosstab(df['model'], df['became_wrong'])
 print("Contingency Table:")
@@ -81,14 +81,12 @@ for model in df['model'].unique():
     print(f"  {model}: {rate:.1f}%")
 
 chi2, p_chi, dof, expected = stats.chi2_contingency(contingency)
-print(f"\nχ²({dof}) = {chi2:.3f}, p = {p_chi:.4f}")
+print(f"\nχ²({dof}) = {chi2:.3f}, p = {p_chi:.6f}")
 
 if p_chi < 0.05:
-    print(f"Result: ✓ REJECT H₀ (significant at α=0.05)")
-    print(f"Conclusion: Susceptibility DIFFERS across models")
+    print(f"Result: ✓ SIGNIFICANT (p < 0.05)")
 else:
-    print(f"Result: ✗ FAIL TO REJECT H₀")
-    print(f"Conclusion: No significant difference between models")
+    print(f"Result: ✗ NOT SIGNIFICANT")
 
 # Cramér's V effect size
 n = contingency.sum().sum()
@@ -101,26 +99,22 @@ print("\n" + "="*70)
 print("SUMMARY OF FINDINGS")
 print("="*70)
 
-print(f"\n1. PRIMARY FINDING:")
+print(f"\n1. PRIMARY HYPOTHESIS TEST:")
 print(f"   - {became_wrong}/{total_initially_correct} initially correct answers became wrong ({effect_size*100:.1f}%)")
-print(f"   - Binomial test: p = {binom_result.pvalue:.4f}")
-print(f"   - {'✓ SIGNIFICANT' if binom_result.pvalue < 0.05 else '✗ NOT SIGNIFICANT'}")
+print(f"   - Binomial test: p = {binom_result.pvalue:.6f}")
+print(f"   - 95% CI: [{ci_lower:.3f}, {ci_upper:.3f}]")
+print(f"   - {'✓ REJECT H₀ - Significant susceptibility detected' if binom_result.pvalue < 0.05 else '✗ FAIL TO REJECT H₀'}")
 
-print(f"\n2. MODEL DIFFERENCES:")
-print(f"   - Chi-square test: χ²({dof}) = {chi2:.3f}, p = {p_chi:.4f}")
-print(f"   - Effect size: Cramér's V = {cramers_v:.3f}")
-print(f"   - {'✓ SIGNIFICANT' if p_chi < 0.05 else '✗ NOT SIGNIFICANT'}")
+print(f"\n2. POST-HOC ANALYSIS (Model Differences):")
+print(f"   - Chi-square test: χ²({dof}) = {chi2:.3f}, p = {p_chi:.6f}")
+print(f"   - Effect size: Cramér's V = {cramers_v:.3f} ({effect_label})")
+print(f"   - {'✓ SIGNIFICANT - Models differ in susceptibility' if p_chi < 0.05 else '✗ NOT SIGNIFICANT'}")
 
 print(f"\n3. INTERPRETATION:")
 if binom_result.pvalue < 0.05:
-    print(f"   AI models demonstrate significant susceptibility to false authority")
-    print(f"   claims, changing {effect_size*100:.1f}% of correct answers after challenge.")
+    if p_chi < 0.05:
+        print(f"   Significant susceptibility detected ({effect_size*100:.1f}%); varies by model capability.")
+    else:
+        print(f"   Significant susceptibility detected ({effect_size*100:.1f}%); similar across models.")
 else:
     print(f"   No significant evidence of authority susceptibility.")
-
-if p_chi < 0.05:
-    print(f"   Model size/capability affects resistance to false authority.")
-else:
-    print(f"   All models show similar susceptibility patterns.")
-
-print("\n✓ Analysis complete. Run visualizations.py for charts.")

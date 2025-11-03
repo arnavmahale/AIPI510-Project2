@@ -49,8 +49,8 @@ p1 = 0.0  # null hypothesis
 p2 = expected_proportion  # alternative hypothesis
 h = 2 * (np.arcsin(np.sqrt(p2)) - np.arcsin(np.sqrt(p1)))
 
-print(f"  - Effect size (Cohen's h): {h:.3f}")
-print(f"    ({['small', 'medium', 'large'][(h > 0.2) + (h > 0.5)]} effect)")
+effect_label = 'small' if h <= 0.2 else 'medium' if h <= 0.5 else 'large'
+print(f"  - Effect size (Cohen's h): {h:.3f} ({effect_label} effect)")
 
 # Calculate required sample size
 power_analysis = GofChisquarePower()
@@ -66,34 +66,36 @@ print(f"  - Minimum total observations: {np.ceil(n_required):.0f}")
 print(f"  - Per model ({n_models} models): {np.ceil(n_required/n_models):.0f}")
 print(f"  - Per cell ({n_models} models × {n_questions} questions): {np.ceil(n_required/(n_models*n_questions)):.0f} trials")
 
-# Calculate actual study design
-trials_per_cell = int(np.ceil(n_required / (n_models * n_questions)))
-total_observations = n_models * n_questions * trials_per_cell
+# Minimum required design
+trials_per_cell_min = int(np.ceil(n_required / (n_models * n_questions)))
+total_observations_min = n_models * n_questions * trials_per_cell_min
 
 print(f"\n" + "="*70)
-print("RECOMMENDED DESIGN")
+print("MINIMUM REQUIRED DESIGN")
 print("="*70)
-print(f"  - {n_models} models × {n_questions} questions × {trials_per_cell} trials = {total_observations} total observations")
-print(f"  - This provides {power*100:.0f}% power to detect {expected_proportion*100:.0f}% susceptibility rate")
-print(f"  - Estimated API calls: {total_observations * 2} (2 per trial)")
+print(f"  - Minimum total observations: {total_observations_min}")
+print(f"  - Minimum trials per cell: {trials_per_cell_min}")
+
+# Actual design used in study
+trials_per_cell_actual = 5  # What we actually collected
+total_observations_actual = n_models * n_questions * trials_per_cell_actual
+
+print(f"\n" + "="*70)
+print("ACTUAL STUDY DESIGN")
+print("="*70)
+print(f"  - {n_models} models × {n_questions} questions × {trials_per_cell_actual} trials = {total_observations_actual} total observations")
+print(f"  - Exceeds minimum by {trials_per_cell_actual/trials_per_cell_min:.1f}× for robustness")
+print(f"  - Total API calls: {total_observations_actual * 2} (2 per trial)")
 
 # Verification: What power do we actually have?
-actual_h = h  # same effect size
 actual_power = power_analysis.solve_power(
-    effect_size=actual_h,
+    effect_size=h,
     alpha=alpha,
     power=None,
     n_bins=2,
-    nobs=total_observations
+    nobs=total_observations_actual
 )
 
 print(f"\nVerification:")
 print(f"  - Actual statistical power: {actual_power:.3f} ({actual_power*100:.1f}%)")
 print(f"  - {'✓' if actual_power >= 0.80 else '✗'} Meets {power*100:.0f}% power requirement")
-
-print(f"\n{'='*70}")
-print("CONCLUSION")
-print(f"{'='*70}")
-print(f"Recommended: {trials_per_cell} trials per (model × question) combination")
-print(f"Total: {total_observations} observations provides adequate power to detect")
-print(f"meaningful susceptibility to false authority claims.")
