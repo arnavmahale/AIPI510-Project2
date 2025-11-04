@@ -76,35 +76,7 @@ plt.savefig('results/accuracy_comparison.png', dpi=300, bbox_inches='tight')
 print("✓ Saved: results/accuracy_comparison.png")
 plt.close()
 
-# 2. POWER ANALYSIS
-fig, ax = plt.subplots(figsize=(12, 7), facecolor='white')
-ax.set_facecolor('white')
-
-total_collected = len(df)
-minimum_needed = 9
-values = [minimum_needed, total_collected]
-
-bars = ax.bar(['Minimum\nNeeded', 'We\nCollected'], values, color=['#CCCCCC', '#003D7A'],
-              width=0.5, edgecolor='#2C3E50', linewidth=2)
-
-for bar, value in zip(bars, values):
-    height = bar.get_height()
-    ax.text(bar.get_x() + bar.get_width()/2., height + 1.5, f'{int(value)}',
-            ha='center', va='bottom', fontsize=36, fontweight='bold', color='#2C3E50')
-
-ax.text(1, total_collected + 8, '✓', fontsize=120, ha='center', color='#2ECC71', fontweight='bold')
-ax.set_ylim(0, total_collected + 18)
-ax.set_ylabel('Number of Observations', fontsize=14, fontweight='bold', color='#2C3E50')
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
-ax.grid(axis='y', alpha=0.3, linestyle='--', color='#E5E7EB')
-ax.set_axisbelow(True)
-plt.tight_layout()
-plt.savefig('results/power_analysis.png', dpi=300, bbox_inches='tight', facecolor='white')
-print("✓ Saved: results/power_analysis.png")
-plt.close()
-
-# 3. SUSCEPTIBILITY PIE CHART
+# 2. SUSCEPTIBILITY PIE CHART
 fig, ax = plt.subplots(figsize=(10, 8), facecolor='white')
 ax.set_facecolor('white')
 
