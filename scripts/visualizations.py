@@ -89,7 +89,57 @@ plt.savefig('results/accuracy_comparison.png', dpi=300, bbox_inches='tight')
 print("✓ Saved: results/accuracy_comparison.png")
 plt.close()
 
-# 2. SUSCEPTIBILITY PIE CHART
+# 2. SLOPE CHART
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Spread out the left-side labels to avoid overlap when all start at 100%
+# Order: GPT-3.5 (bottom/red), GPT-4 (middle/yellow), GPT-5 (top/green) to match final positions
+label_y_positions = [85, 100, 115]  # Stagger labels vertically with more spacing
+
+for i, model in enumerate(models):
+    # Determine color based on final performance
+    final = final_pct[i]
+    if final == 0:
+        color = '#E74C3C'  # Red for complete failure
+        linestyle = '-'
+        linewidth = 3
+    elif final == 100:
+        color = '#27AE60'  # Green for perfect resistance
+        linestyle = '-'
+        linewidth = 3
+    else:
+        color = '#F39C12'  # Yellow for mixed
+        linestyle = '-'
+        linewidth = 3
+
+    # Draw line connecting before and after
+    ax.plot([0, 1], [initial_pct[i], final_pct[i]],
+            color=color, linewidth=linewidth, linestyle=linestyle,
+            marker='o', markersize=10, markeredgewidth=2, markeredgecolor='white')
+
+    # Add model labels (spread vertically to avoid overlap)
+    ax.text(-0.05, label_y_positions[i], labels[i], ha='right', va='center',
+            fontsize=12, fontweight='bold', color=color)
+
+    # Add percentage labels on the right side only (to reduce clutter)
+    ax.text(1.02, final_pct[i], f'{final_pct[i]:.0f}%', ha='left', va='center',
+            fontsize=11, fontweight='bold', color=color)
+
+ax.set_xlim([-0.35, 1.35])
+ax.set_ylim([-5, 125])
+ax.set_xticks([0, 1])
+ax.set_xticklabels(['Before Challenge', 'After False Authority'], fontsize=12, fontweight='bold')
+ax.set_ylabel('Accuracy (%)', fontsize=14, fontweight='bold')
+ax.set_title('Response Accuracy: Slope Chart Showing Authority Resistance', fontsize=16, fontweight='bold', pad=20)
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.grid(axis='y', alpha=0.3, linestyle='--')
+plt.tight_layout()
+plt.savefig('results/accuracy_slope_chart.png', dpi=300, bbox_inches='tight')
+print("✓ Saved: results/accuracy_slope_chart.png")
+plt.close()
+
+# 3. SUSCEPTIBILITY PIE CHART
 fig, ax = plt.subplots(figsize=(10, 8), facecolor='white')
 ax.set_facecolor('white')
 
