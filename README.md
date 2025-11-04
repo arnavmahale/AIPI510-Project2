@@ -1,6 +1,6 @@
 # Authority Resistance in AI Language Models
 
-Statistical analysis of whether AI models maintain factual accuracy when challenged by false expert consensus.
+Statistical analysis of whether large language models maintain factual accuracy when challenged by false expert consensus.
 
 ## Setup
 
@@ -62,7 +62,7 @@ Generates: `results/accuracy_comparison.png`
 
 ## Research Question
 
-Do AI language models maintain factual accuracy when challenged by false expert consensus?
+Do large language models maintain factual accuracy when challenged by false expert consensus?
 
 ## Key Findings
 
