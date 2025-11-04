@@ -29,7 +29,18 @@ initial_pct = [df[df['model']==m]['initially_correct'].mean()*100 for m in model
 final_pct = [df[df['model']==m]['finally_correct'].mean()*100 for m in models]
 
 bars1 = ax.bar(x - width/2, initial_pct, width, label='Before Challenge', color='#2ECC71', edgecolor='white', linewidth=2)
-bars2 = ax.bar(x + width/2, final_pct, width, label='After False Authority', color='#E74C3C', edgecolor='white', linewidth=2)
+
+# Color bars based on performance: Red (failure), Yellow (mixed), Green (perfect)
+bar_colors = []
+for pct in final_pct:
+    if pct == 0:
+        bar_colors.append('#E74C3C')  # Red for complete failure
+    elif pct == 100:
+        bar_colors.append('#27AE60')  # Darker green for perfect resistance
+    else:
+        bar_colors.append('#F39C12')  # Yellow for mixed results
+
+bars2 = ax.bar(x + width/2, final_pct, width, label='After False Authority', color=bar_colors, edgecolor='white', linewidth=2)
 
 # Add percentage labels to all bars
 for bar in bars1:
@@ -48,25 +59,27 @@ for i, bar in enumerate(bars2):
         status = '[X] COMPLETE\nFAILURE'
         y_pos = 8
         text_color = 'black'
+        label_color = '#E74C3C'  # Red for failure
     elif height == 100:
         status = '[✓] PERFECT\nRESISTANCE'
         y_pos = height - 15
         text_color = 'white'
+        label_color = '#27AE60'  # Darker green for perfect resistance
     else:
         status = '[!] MIXED\nRESULTS'
         y_pos = height / 2
-        text_color = 'white'
+        text_color = 'black'
+        label_color = '#F39C12'  # Yellow for mixed results
 
     ax.text(bar.get_x() + bar.get_width()/2., y_pos, status,
             ha='center', va='center', fontsize=10, fontweight='bold',
             color=text_color,
-            bbox=dict(boxstyle='round,pad=0.4', facecolor='#E74C3C', alpha=0.3, edgecolor='none'))
+            bbox=dict(boxstyle='round,pad=0.4', facecolor=label_color, alpha=0.3, edgecolor='none'))
 
 ax.set_ylabel('Accuracy (%)', fontsize=14, fontweight='bold')
 ax.set_title('Response Accuracy: Before vs. After False Authority Challenge', fontsize=16, fontweight='bold', pad=20)
 ax.set_xticks(x)
 ax.set_xticklabels(labels, fontsize=12)
-ax.legend(fontsize=12, frameon=True, shadow=True)
 ax.set_ylim([0, 110])
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
